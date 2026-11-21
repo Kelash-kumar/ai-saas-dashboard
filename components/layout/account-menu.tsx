@@ -6,22 +6,26 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { useSession } from '@/components/providers/session-provider';
 import { useLocale } from '@/components/providers/locale-provider';
 import { useNotifications } from '@/components/providers/notification-provider';
-import { useSignOut } from '@/components/auth/logout-button';
+import { authApi, ApiError } from '@/lib/api/client';
 import { Icon } from '@/components/ui/icon';
 export function AccountMenu() {
     const { principal, permissions } = useSession(),
         { t } = useLocale(),
         notify = useNotifications();
-    const { busy, signOut } = useSignOut();
+    const [busy, setBusy] = useState(false);
     const [clearing, setClearing] = useState(false);
     const name = [principal.firstName, principal.lastName].filter(Boolean).join(' ') || principal.email.split('@')[0];
     const role = t(permissions.includes('admin.access') ? 'header.admin' : 'auth.memberLabel');
     const avatar = principal.avatarData ? <Image src={principal.avatarData} alt="" width={64} height={64} unoptimized /> : <Icon name="user" className="size-full" />;
     async function exit(lock = false) {
+        if (busy) return;
+        setBusy(true);
         try {
-            await signOut(lock);
+            await authApi.logout();
+            window.location.assign(lock ? '/login?reason=locked' : '/login');
         } catch (reason) {
-            notify(reason instanceof Error ? reason.message : 'Unable to sign out.', 'error');
+            setBusy(false);
+            notify(reason instanceof ApiError ? reason.message : 'Unable to reach the server. Please try again.', 'error');
         }
     }
     async function clearCache() {

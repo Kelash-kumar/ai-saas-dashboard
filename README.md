@@ -55,10 +55,13 @@ Set backend CORS_ORIGINS and MAIL_PUBLIC_URL to the frontend origin. Use HTTPS i
 | config/theme.ts      | Shared Vristo defaults and allowed preferences                      |
 | config/i18n.ts       | English/Urdu dictionary                                             |
 | components/providers | Theme, locale, identity and shared notifications                    |
-| components/modules   | Reused tables, pagination, editors and access management            |
+| components/crm       | Shared CRM list, filters, export and record forms                   |
+| components/modules   | Permission catalog and user access management                       |
 | hooks                | Shared cancellable option loading                                   |
 
 Server Components load identity and data. React cache deduplicates identity validation within each server render; private requests use no-store. Client Components provide interactive controls. Editors load on demand. UI components call module services through one HTTP client.
+
+To add a CRM module, register its permissions and list columns in `config/modules.ts`, add its navigation entry in `config/app.ts`, and implement its form fields in `components/crm/crm-editor.tsx`. The dynamic dashboard routes and CRM client already handle listing, record IDs and same-origin requests. Implement the corresponding NestJS endpoints and enforce their permissions before exposing the module.
 
 Admin and User options share a form and session flow. Admin login additionally requires the live admin.access permission. The choice does not confer privileges. Dashboard visibility and every proxy operation check actual permissions, and NestJS independently enforces its scoped RBAC rules. Authenticated visitors leave login for the shared dashboard. Legacy /login/admin, /login/user and /user URLs redirect to the shared routes.
 
@@ -86,6 +89,6 @@ Playwright runs the production frontend on port 3101 and a real backend on 3110 
 
 Vristo assets and the original archive retain the supplied commercial license. Existing theme settings, components and styling were reused without adding authentication or data-fetching dependencies. See [Theme](docs/THEME.md) and [Upgrade notes](docs/UPGRADE.md).
 
-Current verification: 39 production-browser tests pass; backend has 63 unit/infrastructure and 105 PostgreSQL tests. Migrations 6 and 7 are required before running this frontend. Email two-factor needs the backend mail worker (file delivery locally, SMTP in production). SMS remains unavailable.
+Current verification: 40 production-browser tests pass; backend has 63 unit/infrastructure and 105 PostgreSQL tests. Migrations 6 and 7 are required before running this frontend. Email two-factor needs the backend mail worker (file delivery locally, SMTP in production). SMS remains unavailable.
 
 The header account menu shows the current user profile and provides Profile, Clear Cache, Lock Screen and Sign out. Clear Cache reloads private workspace data and clears only app-namespaced browser caches; theme, locale and authentication cookies are preserved. Lock Screen revokes the current server session and requires full sign-in again, including email second-factor when enabled. My account, the Foundation workspace box and the Built around you card are removed from the sidebar.

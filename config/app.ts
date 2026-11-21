@@ -1,22 +1,20 @@
 import type { IconName } from '@/components/ui/icon';
 import { hasPermissions } from '@/lib/auth/permissions';
 import { modules } from './modules';
-export const appConfig = { brand: 'VRISTO', workspace: 'Foundation', title: 'Foundation Workspace', description: 'A thoughtfully configured workspace.' } as const;
-export interface NavigationItem {
+export const appConfig = { brand: 'VRISTO', title: 'Foundation Workspace', description: 'A thoughtfully configured workspace.' } as const;
+interface NavigationItem {
     label: string;
     key: string;
     href: string;
     icon: IconName;
     required?: readonly string[];
 }
-export const navigation: { title: string; key: string; items: NavigationItem[] }[] = [
+const navigation: { key: string; items: NavigationItem[] }[] = [
     {
-        title: 'Workspace',
         key: 'nav.workspace',
         items: [{ label: 'Overview', key: 'nav.overview', href: '/', icon: 'dashboard' }],
     },
     {
-        title: 'User Management',
         key: 'nav.management',
         items: [
             { label: 'Admins', key: 'nav.admins', href: '/admins', icon: 'admin', required: modules.admins.read },
@@ -26,7 +24,6 @@ export const navigation: { title: string; key: string; items: NavigationItem[] }
         ],
     },
     {
-        title: 'Configuration',
         key: 'nav.configuration',
         items: [
             { label: 'Appearance', key: 'nav.appearance', href: '/settings/appearance', icon: 'palette' },

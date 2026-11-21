@@ -82,7 +82,7 @@ function CommandMenu({ open, onClose }: { open: boolean; onClose: () => void }) 
     const { t } = useLocale();
     const navigation = visibleNavigation(permissions);
     const [query, setQuery] = useState('');
-    const pages = navigation.flatMap((group) => group.items.filter((item) => 'href' in item));
+    const pages = navigation.flatMap((group) => group.items);
     const matches = pages.filter((item) => t(item.key, item.label).toLowerCase().includes(query.toLowerCase()));
     return (
         <Dialog open={open} onClose={onClose} className="fixed inset-0 z-70">

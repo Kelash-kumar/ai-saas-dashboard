@@ -15,7 +15,6 @@ export interface SessionView {
     portal: Portal;
 }
 export const loginPath = () => '/login';
-export const homePath = () => '/';
 export function safeDestination(value: string | undefined): string {
     return value && /^\/(?:settings\/appearance|ui-kit|users(?:\/[a-f0-9-]+\/access)?|companies|roles|permissions|account)?$/.test(value) ? value : '/';
 }

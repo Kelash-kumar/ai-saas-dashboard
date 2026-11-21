@@ -41,6 +41,20 @@ test('server proxy rejects manual URL, body and method privilege attempts', asyn
     expect((await api.get('/api/modules/not-a-module')).status()).toBe(404);
 });
 
+test('permission catalog can create and find a definition', async ({ page, context }) => {
+    await useAdmin(context);
+    await page.goto('/permissions');
+    await page.getByRole('button', { name: 'Create', exact: true }).click();
+    const dialog = page.getByRole('dialog');
+    await dialog.getByLabel('Resource', { exact: true }).fill('reports');
+    await dialog.getByLabel('Action', { exact: true }).fill('preview');
+    await dialog.getByRole('button', { name: 'Save changes' }).click();
+    await expect(dialog).toHaveCount(0);
+    await page.locator('#module-search').fill('reports.preview');
+    await page.getByRole('button', { name: 'Search', exact: true }).click();
+    await expect(page.getByRole('cell', { name: 'reports.preview', exact: true })).toBeVisible();
+});
+
 test('CRM company forms, filtered exports and archive restore use real API records', async ({ page, context }) => {
     await useAdmin(context);
     const name = 'CRM ' + randomUUID().slice(0, 8);

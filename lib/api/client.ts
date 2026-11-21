@@ -51,7 +51,6 @@ export const http = {
     get: <T>(path: string, signal?: AbortSignal) => execute<T>(path, { signal }),
     post: <T>(path: string, body: unknown, renew = true) => execute<T>(path, { method: 'POST', body, renew }),
     patch: <T>(path: string, body: unknown) => execute<T>(path, { method: 'PATCH', body }),
-    delete: <T>(path: string) => execute<T>(path, { method: 'DELETE' }),
 };
 export const authApi = {
     login: (email: string, password: string, portal: 'admin' | 'user') => http.post<{ destination?: string; mfaRequired?: boolean }>('/api/session/login', { email, password, portal }, false),

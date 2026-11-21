@@ -1,17 +1,16 @@
 import { notFound } from 'next/navigation';
 import { requireSession } from '@/lib/auth/server';
-import { moduleDefinition } from '@/config/modules';
-import type { ModuleName } from '@/config/modules';
+import { isModuleName, modules } from '@/config/modules';
 import { hasPermissions } from '@/lib/auth/permissions';
 import { getI18n } from '@/lib/i18n-server';
 import { listModule } from '@/lib/api/modules-server';
-import { ModuleWorkspace } from '@/components/modules/module-workspace';
+import { PermissionCatalog } from '@/components/modules/permission-catalog';
 import { listCrm } from '@/lib/api/crm-server';
 import { CrmList } from '@/components/crm/crm-list';
 export default async function ModulePage({ params, searchParams }: { params: Promise<{ module: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
     const { module } = await params;
-    const definition = moduleDefinition(module);
-    if (!definition) notFound();
+    if (!isModuleName(module)) notFound();
+    const definition = modules[module];
     const session = await requireSession();
     const { t } = await getI18n();
     if (!hasPermissions(session.permissions, definition.read))
@@ -25,8 +24,8 @@ export default async function ModulePage({ params, searchParams }: { params: Pro
     const query = Object.fromEntries(Object.entries(input).map(([key, value]) => [key, Array.isArray(value) ? value[0] : value]));
     if (module !== 'permissions') {
         const page = await listCrm(module, { limit: '10', ...query });
-        return <CrmList key={JSON.stringify(query)} name={module as ModuleName} page={page} permissions={session.permissions} query={query} />;
+        return <CrmList key={JSON.stringify(query)} name={module} page={page} permissions={session.permissions} query={query} />;
     }
     const page = await listModule(module, query);
-    return <ModuleWorkspace name={module as ModuleName} page={page} permissions={session.permissions} query={query} />;
+    return <PermissionCatalog page={page} permissions={session.permissions} query={query} />;
 }

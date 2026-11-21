@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import type { ModuleName } from '@/config/modules';
-import { modulesApi } from '@/lib/api/modules-client';
+import { crmApi } from '@/lib/api/crm-client';
 export function useModuleOptions(name: ModuleName, query: string, enabled = true) {
     const [rows, setRows] = useState<Record<string, unknown>[]>([]);
     const [error, setError] = useState('');
@@ -11,7 +11,7 @@ export function useModuleOptions(name: ModuleName, query: string, enabled = true
         const controller = new AbortController();
         const timer = setTimeout(() => {
             setLoading(true);
-            void modulesApi
+            void crmApi
                 .list(name, 'limit=100&search=' + encodeURIComponent(query), controller.signal)
                 .then((page) => {
                     setRows(page.data);

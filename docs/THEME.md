@@ -38,7 +38,7 @@ Sidebar tone default follows light/dark; dark is Vristo's semi-dark sidebar styl
 
 ## Brand and navigation
 
-Edit config/app.ts for brand/workspace/title and central navigation. Ready pages have hrefs; future modules are rendered as noninteractive Upcoming items. Sidebar, horizontal navigation and page search derive from the same registry. Add a real route before adding its href. Vristo's SVG icons are wrapped by components/ui/icon.tsx so app components do not repeat import paths or accessibility handling.
+Edit config/app.ts for the brand, page title and permission-aware navigation. Sidebar, horizontal navigation and page search derive from the same registry. Add a real route before adding its href. Vristo's SVG icons are wrapped by components/ui/icon.tsx so app components do not repeat import paths or accessibility handling.
 
 Nunito is self-hosted through @fontsource-variable/nunito. Builds and page loads do not require Google Fonts. System font uses the device's UI font. Global component styles use CSS variables rather than hard-coded per-page theme colors. Shared classes include panel, btn/btn-primary/btn-secondary, form-input, form-label, section-heading, badge and table styles.
 

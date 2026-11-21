@@ -20,7 +20,7 @@ export async function moduleRequest(name: string, method: 'GET' | 'POST' | 'PATC
     await requireApiSession(required);
     if (method === 'POST' || method === 'PATCH') {
         if (!body || typeof body !== 'object' || Array.isArray(body)) throw new ApiError(400, 'Invalid form data.');
-        const allowed = definition.fields.filter((field) => (method === 'POST' ? !field.editOnly : !field.createOnly)).map((field) => field.key);
+        const allowed = method === 'POST' ? definition.fields : definition.fields.filter((key) => !definition.createOnly?.includes(key));
         if (Object.keys(body).some((key) => !allowed.includes(key))) throw new ApiError(400, 'Unsupported form field.');
     }
     const access = (await cookies()).get(accessCookie)?.value;

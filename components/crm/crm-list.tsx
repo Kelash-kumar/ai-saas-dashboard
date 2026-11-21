@@ -12,36 +12,7 @@ import { useNotifications } from '@/components/providers/notification-provider';
 import { crmApi } from '@/lib/api/crm-client';
 import { ConfirmAction } from './confirm-action';
 import { CompanyPicker } from './company-picker';
-const columns = {
-    accounts: [
-        ['fullName', 'Full Name', 'firstName'],
-        ['email', 'Email', 'email'],
-        ['phone', 'Phone', 'phone'],
-        ['notificationChannel', 'Notification', 'notificationChannel'],
-        ['twoFactor', 'Two-Factor', 'twoFactor'],
-        ['createdAt', 'Created At', 'createdAt'],
-    ],
-    companies: [
-        ['name', 'Company', 'name'],
-        ['email', 'Email', 'email'],
-        ['phone', 'Phone', 'phone'],
-        ['website', 'Website', ''],
-        ['createdAt', 'Created At', 'createdAt'],
-    ],
-    roles: [
-        ['name', 'Name', 'name'],
-        ['guard', 'Guard', ''],
-        ['description', 'Description', ''],
-        ['createdAt', 'Created At', 'createdAt'],
-    ],
-    permissions: [
-        ['name', 'Permission', 'name'],
-        ['resource', 'Resource', ''],
-        ['action', 'Action', ''],
-        ['createdAt', 'Created At', 'createdAt'],
-    ],
-} as const;
-export function CrmList({ name, page, permissions, query }: { name: ModuleName; page: PageData; permissions: string[]; query: Record<string, string | undefined> }) {
+export function CrmList({ name, page, permissions, query }: { name: Exclude<ModuleName, 'permissions'>; page: PageData; permissions: string[]; query: Record<string, string | undefined> }) {
     const router = useRouter(),
         { t, locale } = useLocale(),
         notify = useNotifications();
@@ -54,7 +25,7 @@ export function CrmList({ name, page, permissions, query }: { name: ModuleName; 
     const [company, setCompany] = useState(query.companyId ?? '');
     const can = (permission: string) => permissions.includes(name + '.' + permission);
     const account = name === 'users' || name === 'admins';
-    const fields = account ? columns.accounts : columns[name as 'companies' | 'roles' | 'permissions'];
+    const fields = modules[name].columns;
     const queryString = new URLSearchParams(Object.entries(query).filter(([, v]) => v !== undefined) as [string, string][]).toString();
     function navigate(changes: Record<string, string>) {
         const params = new URLSearchParams(queryString);
@@ -160,7 +131,7 @@ export function CrmList({ name, page, permissions, query }: { name: ModuleName; 
                                 </button>
                             </>
                         )}
-                        {can('create') && name !== 'permissions' && (
+                        {can('create') && (
                             <Link className="btn btn-primary" href={'/' + name + '/create'}>
                                 <Icon name="plus" className="size-4" />
                                 Add New
@@ -211,16 +182,14 @@ export function CrmList({ name, page, permissions, query }: { name: ModuleName; 
                                     </select>
                                 </div>
                             ) : (
-                                name !== 'permissions' && (
-                                    <div>
-                                        <label htmlFor="filter-deleted">Include Deleted</label>
-                                        <select id="filter-deleted" name="deleted" className="form-input" defaultValue={query.deleted ?? 'active'}>
-                                            <option value="active">Active records</option>
-                                            <option value="with">Include deleted</option>
-                                            <option value="only">Deleted only</option>
-                                        </select>
-                                    </div>
-                                )
+                                <div>
+                                    <label htmlFor="filter-deleted">Include Deleted</label>
+                                    <select id="filter-deleted" name="deleted" className="form-input" defaultValue={query.deleted ?? 'active'}>
+                                        <option value="active">Active records</option>
+                                        <option value="with">Include deleted</option>
+                                        <option value="only">Deleted only</option>
+                                    </select>
+                                </div>
                             )}
                         </div>
                         <div className="crm-filter-footer">
@@ -312,11 +281,9 @@ export function CrmList({ name, page, permissions, query }: { name: ModuleName; 
                                                 <Icon name="dots" className="size-5" />
                                             </MenuButton>
                                             <MenuItems anchor="bottom end" className="crm-action-menu">
-                                                {name !== 'permissions' && (
-                                                    <MenuItem>
-                                                        <Link href={'/' + name + '/' + row.id}>View</Link>
-                                                    </MenuItem>
-                                                )}
+                                                <MenuItem>
+                                                    <Link href={'/' + name + '/' + row.id}>View</Link>
+                                                </MenuItem>
                                                 {can('update') && !row.deletedAt && (
                                                     <MenuItem>
                                                         <Link href={'/' + name + '/' + row.id + '/edit'}>Edit</Link>
