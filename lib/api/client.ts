@@ -8,7 +8,7 @@ export async function renewAccess(): Promise<boolean> {
         return response.ok;
     });
 }
-async function execute<T>(path: string, options: { method?: string; body?: unknown; signal?: AbortSignal; renew?: boolean } = {}, retried = false): Promise<T> {
+async function execute<T>(path: string, options: { method?: string; body?: unknown; signal?: AbortSignal; renew?: boolean; blob?: boolean } = {}, retried = false): Promise<T> {
     if (!path.startsWith('/api/')) throw new ApiError(400, 'Only application API paths are allowed.');
     let response: Response;
     try {
@@ -33,6 +33,7 @@ async function execute<T>(path: string, options: { method?: string; body?: unkno
         throw new ApiError(401, 'Please sign in again.');
     }
     if (response.status === 204) return undefined as T;
+    if (response.ok && options.blob) return (await response.blob()) as T;
     let body: unknown;
     try {
         body = await response.json();
@@ -46,13 +47,15 @@ async function execute<T>(path: string, options: { method?: string; body?: unkno
     return body as T;
 }
 export const http = {
+    download: (path: string) => execute<Blob>(path, { blob: true }),
     get: <T>(path: string, signal?: AbortSignal) => execute<T>(path, { signal }),
     post: <T>(path: string, body: unknown, renew = true) => execute<T>(path, { method: 'POST', body, renew }),
     patch: <T>(path: string, body: unknown) => execute<T>(path, { method: 'PATCH', body }),
     delete: <T>(path: string) => execute<T>(path, { method: 'DELETE' }),
 };
 export const authApi = {
-    login: (email: string, password: string, portal: 'admin' | 'user') => http.post<{ destination: string }>('/api/session/login', { email, password, portal }, false),
+    login: (email: string, password: string, portal: 'admin' | 'user') => http.post<{ destination?: string; mfaRequired?: boolean }>('/api/session/login', { email, password, portal }, false),
+    verifyLogin: (code: string) => http.post('/api/session/login/verify', { code }, false),
     logout: () => http.post('/api/session/logout', {}, false),
     verify: (token: string) => http.post('/api/session/verify', { token }, false),
 };

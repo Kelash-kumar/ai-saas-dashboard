@@ -1,5 +1,8 @@
 export type Portal = 'admin' | 'user';
 export interface Principal {
+    firstName?: string | null;
+    lastName?: string | null;
+    avatarData?: string | null;
     userId: string;
     sessionId: string;
     email: string;

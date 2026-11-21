@@ -16,6 +16,7 @@ const { ArgonPasswordHasher } = requireBackend('./src/features/auth/crypto/argon
 let db,
     server,
     closing = false;
+let mfaEmail;
 async function close() {
     if (closing) return;
     closing = true;
@@ -26,6 +27,25 @@ async function close() {
 }
 process.on('message', (message) => {
     if (message === 'stop') void close();
+    if (message === 'mfa-code' && db && mfaEmail)
+        void (async () => {
+            const { MailOutboxEntity } = requireBackend('./src/features/notifications/entities/mail-outbox.entity.ts');
+            const { EncryptedMessages } = requireBackend('./src/features/notifications/encrypted-messages.ts');
+            const { AuthConfig } = requireBackend('./src/core/config/auth-config.service.ts');
+            const { ConfigService } = requireBackend('@nestjs/config');
+            const { loadCliConfig } = requireBackend('./src/core/config/load-cli-config.ts');
+            const mail = await db.source
+                .getRepository(MailOutboxEntity)
+                .createQueryBuilder('mail')
+                .addSelect(['mail.recipient', 'mail.payloadCiphertext'])
+                .where({ recipient: mfaEmail, template: 'login_code' })
+                .orderBy('mail.createdAt', 'DESC')
+                .getOneOrFail();
+            const code = new EncryptedMessages(new AuthConfig(new ConfigService(loadCliConfig().environment))).open(mail.template, mail.recipient, mail.keyId, mail.payloadCiphertext).token;
+            process.send({ mfaCode: code });
+        })().catch(() => {
+            console.error('Fixture mailbox unavailable.');
+        });
 });
 process.on('disconnect', () => {
     void close();
@@ -41,6 +61,8 @@ process.on('disconnect', () => {
         .getRepository(UserEntity)
         .save({ email: userEmail, passwordHash: await new ArgonPasswordHasher().hash(password), emailVerifiedAt: new Date(), firstName: 'Test', lastName: 'Member' });
     const readerEmail = 'reader-' + suffix + '@example.test';
+    mfaEmail = 'mfa-' + suffix + '@example.test';
+    await db.source.getRepository(UserEntity).save({ email: mfaEmail, passwordHash: await new ArgonPasswordHasher().hash(password), emailVerifiedAt: new Date(), twoFactor: 'email' });
     const reader = await db.source.getRepository(UserEntity).save({ email: readerEmail, passwordHash: await new ArgonPasswordHasher().hash(password), emailVerifiedAt: new Date() });
     const { RoleEntity } = requireBackend('./src/features/authorization/entities/role.entity.ts');
     const { PermissionEntity } = requireBackend('./src/features/authorization/entities/permission.entity.ts');
@@ -74,7 +96,7 @@ process.on('disconnect', () => {
         await new Promise((resolve) => setTimeout(resolve, 100));
     }
     if (!ready) throw new Error('Test API unavailable');
-    process.send({ ready: true, adminEmail, userEmail, readerEmail, password });
+    process.send({ ready: true, adminEmail, userEmail, readerEmail, password, mfaEmail });
 })().catch(async () => {
     console.error('Isolated authentication test backend failed to initialize.');
     await close();

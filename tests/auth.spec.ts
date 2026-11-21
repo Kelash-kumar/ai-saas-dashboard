@@ -22,14 +22,15 @@ test('one public login offers both options and no registration links', async ({ 
 test('admin login is real, cookies are HttpOnly, and logout revokes the server session', async ({ page, context, request }) => {
     await signIn(page, 'admin');
     await expect(page).toHaveURL('http://127.0.0.1:3101/');
-    await expect(page.getByText('Administrator · ' + process.env.TEST_ADMIN_EMAIL)).toBeVisible();
+    await page.getByRole('button', { name: 'Open account menu', exact: true }).click();
+    await expect(page.getByRole('menu').getByText(process.env.TEST_ADMIN_EMAIL!, { exact: true })).toBeVisible();
     const stored = await context.cookies();
     const access = stored.find((cookie) => cookie.name === 'foundation_access');
     expect(access?.httpOnly).toBe(true);
     expect(stored.find((cookie) => cookie.name === 'foundation_refresh')?.httpOnly).toBe(true);
     expect(await page.evaluate(() => document.cookie)).not.toContain('foundation_');
     expect(await page.evaluate(() => JSON.stringify(localStorage))).not.toMatch(/accessToken|refreshToken|csrfToken/);
-    await page.getByRole('button', { name: 'Sign out', exact: true }).click();
+    await page.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
     await expect(page).toHaveURL(/\/login/);
     const denied = await request.get('http://127.0.0.1:3110/api/v1/auth/me', { headers: { Authorization: 'Bearer ' + access!.value } });
     expect(denied.status()).toBe(401);
@@ -82,4 +83,18 @@ test('mobile login stays readable without horizontal overflow', async ({ page })
     await expect(page.getByLabel('Email address', { exact: true })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     await page.screenshot({ path: 'test-results/admin-login-mobile.png', fullPage: true });
+});
+
+test('email second-factor uses an HttpOnly challenge and completes before dashboard access', async ({ page, context }) => {
+    await context.addCookies(JSON.parse(process.env.TEST_MFA_COOKIES!));
+    await page.goto('/login');
+    await expect(page.getByLabel('Verification code', { exact: true })).toBeVisible();
+    expect((await context.cookies()).find((cookie) => cookie.name === 'foundation_challenge')?.httpOnly).toBe(true);
+    expect((await context.cookies()).find((cookie) => cookie.name === 'foundation_access')).toBeUndefined();
+    await page.getByLabel('Verification code', { exact: true }).fill(process.env.TEST_MFA_CODE!);
+    await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+    await expect(page).toHaveURL('http://127.0.0.1:3101/');
+    await expect(page.getByRole('heading', { name: 'Your workspace, in perspective.' })).toBeVisible();
+    expect((await context.cookies()).find((cookie) => cookie.name === 'foundation_access')?.httpOnly).toBe(true);
+    expect((await context.cookies()).find((cookie) => cookie.name === 'foundation_challenge')).toBeUndefined();
 });

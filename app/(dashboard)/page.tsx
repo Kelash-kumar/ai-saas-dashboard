@@ -3,15 +3,15 @@ import { requireSession } from '@/lib/auth/server';
 import { visibleNavigation } from '@/config/app';
 import { hasPermissions } from '@/lib/auth/permissions';
 import { getI18n } from '@/lib/i18n-server';
-import { listModule } from '@/lib/api/modules-server';
+import { listCrm } from '@/lib/api/crm-server';
 import { Icon } from '@/components/ui/icon';
 export default async function Dashboard() {
     const session = await requireSession();
     const { t } = await getI18n();
     const counts = await Promise.all(
-        (['users', 'companies'] as const)
+        (['admins', 'users', 'companies'] as const)
             .filter((name) => hasPermissions(session.permissions, [name + '.read']))
-            .map(async (name) => ({ name, total: (await listModule(name, { limit: '1' })).meta.total })),
+            .map(async (name) => ({ name, total: (await listCrm(name, { limit: '1' })).meta.total })),
     );
     return (
         <>
@@ -27,7 +27,7 @@ export default async function Dashboard() {
                 {counts.map((count) => (
                     <Link key={count.name} className="panel dashboard-stat" href={'/' + count.name}>
                         <span className="section-icon">
-                            <Icon name={count.name === 'users' ? 'users' : 'company'} className="size-5" />
+                            <Icon name={count.name !== 'companies' ? 'users' : 'company'} className="size-5" />
                         </span>
                         <span>{t('nav.' + count.name)}</span>
                         <strong>{count.total}</strong>

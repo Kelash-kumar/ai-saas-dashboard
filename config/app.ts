@@ -13,12 +13,16 @@ export const navigation: { title: string; key: string; items: NavigationItem[] }
     {
         title: 'Workspace',
         key: 'nav.workspace',
+        items: [{ label: 'Overview', key: 'nav.overview', href: '/', icon: 'dashboard' }],
+    },
+    {
+        title: 'User Management',
+        key: 'nav.management',
         items: [
-            { label: 'Overview', key: 'nav.overview', href: '/', icon: 'dashboard' },
+            { label: 'Admins', key: 'nav.admins', href: '/admins', icon: 'admin', required: modules.admins.read },
+            { label: 'Roles', key: 'nav.roles', href: '/roles', icon: 'roles', required: modules.roles.read },
             { label: 'Users', key: 'nav.users', href: '/users', icon: 'users', required: modules.users.read },
             { label: 'Companies', key: 'nav.companies', href: '/companies', icon: 'company', required: modules.companies.read },
-            { label: 'Roles', key: 'nav.roles', href: '/roles', icon: 'grid', required: modules.roles.read },
-            { label: 'Permissions', key: 'nav.permissions', href: '/permissions', icon: 'check', required: modules.permissions.read },
         ],
     },
     {
@@ -27,7 +31,6 @@ export const navigation: { title: string; key: string; items: NavigationItem[] }
         items: [
             { label: 'Appearance', key: 'nav.appearance', href: '/settings/appearance', icon: 'palette' },
             { label: 'UI foundations', key: 'nav.ui', href: '/ui-kit', icon: 'grid' },
-            { label: 'My account', key: 'nav.account', href: '/account', icon: 'users' },
         ],
     },
 ];

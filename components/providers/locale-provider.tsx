@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { translate, localeCookie } from '@/config/i18n';
 import type { Locale } from '@/config/i18n';
 import { useTheme } from '@/components/theme/theme-provider';
+import Image from 'next/image';
 interface LocaleContext {
     locale: Locale;
     t: (key: string, fallback?: string) => string;
@@ -33,12 +34,20 @@ export function useLocale() {
     if (!value) throw new Error('LocaleProvider required');
     return value;
 }
-export function LocaleSwitcher() {
+export function LocaleSwitcher({ compact = false }: { compact?: boolean }) {
     const { locale, change } = useLocale();
-    return (
+    const select = (
         <select className="locale-switcher" aria-label="Language" value={locale} onChange={(event) => change(event.target.value === 'ur' ? 'ur' : 'en')}>
             <option value="en">English</option>
             <option value="ur">اردو</option>
         </select>
+    );
+    return compact ? (
+        <label className="header-locale-control" title={locale === 'ur' ? 'اردو' : 'English'}>
+            <Image src={'/assets/images/flags/' + (locale === 'ur' ? 'PK' : 'US') + '.svg'} alt="" width={26} height={26} />
+            {select}
+        </label>
+    ) : (
+        select
     );
 }

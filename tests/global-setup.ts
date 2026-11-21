@@ -4,7 +4,7 @@ import { request } from '@playwright/test';
 export default async function setup() {
     const backend = fork(resolve('scripts/auth-test-backend.mjs'), [], { execArgv: [], stdio: ['ignore', 'ignore', 'inherit', 'ipc'], windowsHide: true });
     try {
-        const ready = await new Promise<{ adminEmail: string; userEmail: string; readerEmail: string; password: string }>((resolve, reject) => {
+        const ready = await new Promise<{ adminEmail: string; userEmail: string; readerEmail: string; password: string; mfaEmail: string }>((resolve, reject) => {
             const timeout = setTimeout(() => reject(new Error('Authentication test backend timed out')), 60000);
             backend.once('error', reject);
             backend.once('exit', () => reject(new Error('Authentication test backend exited')));
@@ -13,6 +13,8 @@ export default async function setup() {
                     message &&
                     typeof message === 'object' &&
                     'ready' in message &&
+                    'mfaEmail' in message &&
+                    typeof message.mfaEmail === 'string' &&
                     'adminEmail' in message &&
                     typeof message.adminEmail === 'string' &&
                     'readerEmail' in message &&
@@ -23,7 +25,7 @@ export default async function setup() {
                     typeof message.password === 'string'
                 ) {
                     clearTimeout(timeout);
-                    resolve({ adminEmail: message.adminEmail, userEmail: message.userEmail, readerEmail: message.readerEmail, password: message.password });
+                    resolve({ adminEmail: message.adminEmail, userEmail: message.userEmail, readerEmail: message.readerEmail, password: message.password, mfaEmail: message.mfaEmail });
                 }
             });
         });
@@ -41,6 +43,21 @@ export default async function setup() {
         if (!readerLogin.ok()) throw new Error('Reader fixture login failed');
         process.env.TEST_READER_COOKIES = JSON.stringify((await reader.storageState()).cookies);
         await reader.dispose();
+        const mfa = await request.newContext({ baseURL: 'http://127.0.0.1:3101', extraHTTPHeaders: { Origin: 'http://127.0.0.1:3101' } });
+        const pending = await mfa.post('/api/session/login', { data: { email: ready.mfaEmail, password: ready.password, portal: 'user' } });
+        if (!pending.ok() || !(await pending.json()).mfaRequired) throw new Error('MFA fixture failed');
+        process.env.TEST_MFA_COOKIES = JSON.stringify((await mfa.storageState()).cookies);
+        process.env.TEST_MFA_CODE = await new Promise<string>((resolve, reject) => {
+            const timeout = setTimeout(() => reject(new Error('Fixture mailbox timeout')), 10000);
+            backend.on('message', (message) => {
+                if (message && typeof message === 'object' && 'mfaCode' in message && typeof message.mfaCode === 'string') {
+                    clearTimeout(timeout);
+                    resolve(message.mfaCode);
+                }
+            });
+            backend.send('mfa-code');
+        });
+        await mfa.dispose();
         return async () => {
             await new Promise<void>((resolve) => {
                 backend.once('exit', () => resolve());

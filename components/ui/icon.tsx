@@ -11,8 +11,42 @@ import IconCheck from '@/components/icon/icon-circle-check';
 import IconDashboard from '@/components/icon/menu/icon-menu-dashboard';
 import IconUsers from '@/components/icon/menu/icon-menu-users';
 import IconCompany from '@/components/icon/menu/icon-menu-contacts';
+import IconHome from '@/components/icon/icon-home';
+import IconListCheck from '@/components/icon/icon-list-check';
+import IconTrash from '@/components/icon/icon-trash-lines';
+import IconDownload from '@/components/icon/icon-download';
+import IconPlus from '@/components/icon/icon-plus';
+import IconEye from '@/components/icon/icon-eye';
+import IconEdit from '@/components/icon/icon-edit';
+import IconChecks from '@/components/icon/icon-checks';
+import IconArrowBackward from '@/components/icon/icon-arrow-backward';
+import IconCaretDown from '@/components/icon/icon-caret-down';
+import IconCaretsDown from '@/components/icon/icon-carets-down';
+import IconDots from '@/components/icon/icon-horizontal-dots';
+import IconUser from '@/components/icon/icon-user';
+import IconLock from '@/components/icon/icon-lock';
+import IconUsersGroup from '@/components/icon/icon-users-group';
+import IconLogout from '@/components/icon/icon-logout';
+import IconRefresh from '@/components/icon/icon-refresh';
 
 const icons = {
+    logout: IconLogout,
+    refresh: IconRefresh,
+    home: IconHome,
+    filter: IconListCheck,
+    trash: IconTrash,
+    download: IconDownload,
+    plus: IconPlus,
+    view: IconEye,
+    edit: IconEdit,
+    confirm: IconChecks,
+    back: IconArrowBackward,
+    caret: IconCaretDown,
+    carets: IconCaretsDown,
+    dots: IconDots,
+    user: IconUser,
+    admin: IconLock,
+    roles: IconUsersGroup,
     settings: IconSettings,
     palette: IconSettings,
     sun: IconSun,

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { SessionView } from '@/lib/auth/types';
-import { LogoutButton } from '@/components/auth/logout-button';
+import { AccountMenu } from './account-menu';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -66,33 +66,11 @@ function SidebarContent({ close }: { close?: () => void }) {
                     </button>
                 )}
             </div>
-            <div className="workspace-switcher">
-                <span className="workspace-initial">F</span>
-                <div className="nav-label">
-                    <strong>{appConfig.workspace}</strong>
-                    <small>Shared workspace</small>
-                </div>
-                <span className="workspace-indicator" aria-hidden="true">
-                    ⌄
-                </span>
-            </div>
             <NavLinks close={close} />
             <div className="sidebar-bottom">
-                <div className="sidebar-help">
-                    <span className="section-icon">
-                        <Icon name="laptop" className="size-5" />
-                    </span>
-                    <div>
-                        <strong>Built around you</strong>
-                        <p>One theme. Every page.</p>
-                    </div>
-                    <Link href="/settings/appearance" onClick={close}>
-                        Personalize workspace <span aria-hidden="true">↗</span>
-                    </Link>
-                </div>
                 <div className="sidebar-edition">
                     <span className="status-dot" />
-                    <span>Vristo · Foundation edition</span>
+                    <span>{appConfig.brand}</span>
                 </div>
             </div>
         </>
@@ -162,7 +140,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         .flatMap((group) => group.items)
         .filter((item) => (item.href === '/' ? pathname === '/' : pathname === item.href || pathname.startsWith(item.href + '/')))
         .sort((left, right) => right.href.length - left.href.length)[0];
-    const title = currentItem ? t(currentItem.key, currentItem.label) : t('nav.overview');
+    const title = currentItem ? t(currentItem.key, currentItem.label) : t(pathname === '/account' ? 'header.profile' : 'nav.overview');
     return (
         <>
             <a href="#main-content" className="skip-link">
@@ -204,13 +182,10 @@ function Shell({ children }: { children: React.ReactNode }) {
                                     <Icon name={resolvedMode === 'dark' ? 'sun' : 'moon'} className="size-5" />
                                 </button>
                                 <button type="button" className="icon-button" aria-label="Customize theme" onClick={() => setDrawerOpen(true)}>
-                                    <Icon name="settings" className="size-5" />
+                                    <Icon name="laptop" className="size-5" />
                                 </button>
-                                <span className="account-chip" title={session.principal.email}>
-                                    {t(session.permissions.includes('admin.access') ? 'auth.adminLabel' : 'auth.memberLabel')} · {session.principal.email}
-                                </span>
-                                <LocaleSwitcher />
-                                <LogoutButton />
+                                <LocaleSwitcher compact />
+                                <AccountMenu />
                             </div>
                         </div>
                         <NavLinks horizontal />

@@ -18,7 +18,7 @@ export type ThemeSettings = { [K in ThemeKey]: (typeof themeChoices)[K][number] 
 /** Change these once to set the defaults for every route and component. */
 export const defaultTheme: Readonly<ThemeSettings> = Object.freeze({
     mode: 'light',
-    accent: 'indigo',
+    accent: 'teal',
     navigation: 'vertical',
     width: 'full',
     direction: 'ltr',

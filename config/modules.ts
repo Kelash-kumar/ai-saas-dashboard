@@ -19,6 +19,17 @@ export interface ModuleDefinition {
     sort: string[];
 }
 export const modules = {
+    admins: {
+        title: 'nav.admins',
+        path: 'crm/admins',
+        read: ['admins.read'],
+        create: ['admins.create'],
+        update: ['admins.update'],
+        remove: ['admins.delete'],
+        fields: [],
+        columns: ['fullName', 'email', 'phone', 'notificationChannel', 'twoFactor', 'createdAt'],
+        sort: ['firstName', 'email', 'phone', 'createdAt'],
+    },
     users: {
         title: 'nav.users',
         path: 'users',

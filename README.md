@@ -28,7 +28,7 @@ npm run dev
 
 Open [Login](http://localhost:3001/login). Development seed credentials: **admin@example.com / Admin@123456789!**. Choose **Login as Admin**. The seed preserves existing passwords and refuses to promote an existing regular account. Production requires explicit SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD; default credentials are rejected.
 
-For managed-user verification mail, start `npm run mail:worker` in another backend terminal. Development messages are captured under the backend's `.local/mail`. Users created through the Users screen must verify their email before login. Admins assign access through **Users → Manage access**. A user with no grants can still open their own dashboard/account/appearance.
+For managed-user verification mail, start `npm run mail:worker` in another backend terminal. Development messages are captured under the backend's `.local/mail`. Admin-created accounts can log in immediately using their email and initial password. Choose Login as User for User records; email ownership verification stays separate, and enabled two-factor codes remain mandatory. Admins assign access through **Users → Manage access**. A user with no grants can still open their own dashboard/account/appearance.
 
 ## Configuration
 
@@ -64,9 +64,9 @@ Admin and User options share a form and session flow. Admin login additionally r
 
 Tokens stay in HttpOnly cookies. Browser requests use same-origin handlers; unsafe requests validate Origin. Refresh uses the backend CSRF bootstrap and rotating refresh token. Web Locks serialize rotation across tabs in supported secure-context browsers. Safe reads can retry after renewal; mutations require explicit resubmission. Tokens are never kept in localStorage. Server-side authorization is checked even when a URL or body is edited manually.
 
-Theme preferences are browser-local and synchronize across tabs. Language uses a non-secret cookie for server rendering and sets Urdu RTL. Core navigation, auth, dashboard and management controls have English/Urdu labels; some theme guidance remains English. Theme settings do not grant access.
+Theme preferences are browser-local and synchronize across tabs. Language uses a non-secret cookie for server rendering and sets Urdu RTL. Core navigation, auth and dashboard labels support English/Urdu. Detailed CRM form/helper copy and some theme guidance currently remain English. Theme settings do not grant access.
 
-Users and Companies support real CRUD (user deletion archives). Roles support catalog CRUD; Permissions support listing/creation. Manage access distinguishes inherited/effective access from direct grants. Catalog selectors on the access screen currently show the first 100 records; complex role inheritance/catalog policy operations remain available through Nest Swagger/Postman. No pretend analytics or notification data is included.
+Admins, Users and Companies now use reference-style full-page create/view/edit forms, filtered lists, CSV/XLSX export, bulk selection, archival and restore. Roles have an Admin/User guard and a grouped permission matrix. Account profiles include photos, personal fields, roles, direct permissions, notification preferences and working email-based two-factor login. Permission catalogs remain real, server-authorized data. See the [CRM guide](../nestjs-auth-foundation/docs/CRM-MANAGEMENT.md) for contracts, limits and upgrade instructions.
 
 ## Validate and build
 
@@ -85,3 +85,7 @@ npm start
 Playwright runs the production frontend on port 3101 and a real backend on 3110 using a newly owned disposable database. It never resets the application database. Backend dependencies and test database privileges must be available. See the backend [working guide](../nestjs-auth-foundation/docs/WORKING-GUIDE.md) for PostgreSQL/pgAdmin, mail and API details.
 
 Vristo assets and the original archive retain the supplied commercial license. Existing theme settings, components and styling were reused without adding authentication or data-fetching dependencies. See [Theme](docs/THEME.md) and [Upgrade notes](docs/UPGRADE.md).
+
+Current verification: 39 production-browser tests pass; backend has 63 unit/infrastructure and 105 PostgreSQL tests. Migrations 6 and 7 are required before running this frontend. Email two-factor needs the backend mail worker (file delivery locally, SMTP in production). SMS remains unavailable.
+
+The header account menu shows the current user profile and provides Profile, Clear Cache, Lock Screen and Sign out. Clear Cache reloads private workspace data and clears only app-namespaced browser caches; theme, locale and authentication cookies are preserved. Lock Screen revokes the current server session and requires full sign-in again, including email second-factor when enabled. My account, the Foundation workspace box and the Built around you card are removed from the sidebar.

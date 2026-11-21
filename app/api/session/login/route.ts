@@ -1,4 +1,4 @@
-import { checkOrigin, apiRequest, decodeData, readIdentity, writeSession, json, authFailure, AuthError } from '@/lib/auth/server';
+import { checkOrigin, apiRequest, decodeData, readIdentity, writeSession, json, authFailure, AuthError, challengeCookie, secure } from '@/lib/auth/server';
 export async function POST(request: Request) {
     try {
         checkOrigin(request);
@@ -31,9 +31,16 @@ export async function POST(request: Request) {
                     ? 'Too many sign-in attempts. Please wait a minute.'
                     : response.status >= 500
                       ? 'The sign-in service is unavailable.'
-                      : 'Invalid credentials or account unavailable.',
+                      : data.portal === 'admin'
+                        ? 'Invalid credentials or account unavailable. User accounts must use Login as User.'
+                        : 'Invalid credentials or account unavailable.',
             );
         const credentials = await decodeData(response);
+        if (credentials.mfaRequired === true && typeof credentials.challengeToken === 'string' && /^[A-Za-z0-9_-]{43}$/.test(credentials.challengeToken)) {
+            const pending = json({ mfaRequired: true });
+            pending.cookies.set(challengeCookie, credentials.challengeToken + '.' + data.portal, { httpOnly: true, secure, sameSite: 'strict', path: '/', maxAge: 300 });
+            return pending;
+        }
         if (typeof credentials.accessToken !== 'string') throw new AuthError(502, 'Unexpected session response.');
         const identity = await readIdentity(credentials.accessToken, data.portal, true);
         if (!identity) throw new AuthError(401, 'Account unavailable.');
