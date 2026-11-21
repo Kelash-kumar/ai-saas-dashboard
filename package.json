@@ -1,0 +1,39 @@
+{
+    "name": "nestjs-auth-admin",
+    "version": "0.1.0",
+    "private": true,
+    "description": "Vristo Next.js admin with unified NestJS authentication and permission-based dashboard",
+    "engines": {
+        "node": ">=22.13 <23 || >=24.11"
+    },
+    "scripts": {
+        "dev": "next dev --hostname 127.0.0.1 --port 3001",
+        "build": "next build",
+        "start": "next start --hostname 127.0.0.1 --port 3001",
+        "typecheck": "next typegen && tsc --noEmit",
+        "lint": "eslint . --max-warnings 0",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "test": "playwright test",
+        "check": "npm run typecheck && npm run lint && npm run format:check && npm run build && npm test"
+    },
+    "dependencies": {
+        "@fontsource-variable/nunito": "5.3.0",
+        "@headlessui/react": "2.2.10",
+        "next": "16.4.6",
+        "react": "19.3.1",
+        "react-dom": "19.3.1"
+    },
+    "devDependencies": {
+        "@playwright/test": "1.65.1",
+        "@tailwindcss/postcss": "4.3.5",
+        "@types/node": "26.6.6",
+        "@types/react": "19.3.0",
+        "@types/react-dom": "19.3.0",
+        "eslint": "9.39.5",
+        "eslint-config-next": "16.4.6",
+        "prettier": "3.10.1",
+        "tailwindcss": "4.3.5",
+        "typescript": "6.0.3"
+    }
+}
