@@ -12,6 +12,7 @@ import { useNotifications } from '@/components/providers/notification-provider';
 import { crmApi } from '@/lib/api/crm-client';
 import { ConfirmAction } from './confirm-action';
 import { CompanyPicker } from './company-picker';
+import { useGlobalLoadingEffect } from '@/hooks/use-global-loader';
 export function CrmList({ name, page, permissions, query }: { name: Exclude<ModuleName, 'permissions'>; page: PageData; permissions: string[]; query: Record<string, string | undefined> }) {
     const router = useRouter(),
         { t, locale } = useLocale(),
@@ -23,6 +24,7 @@ export function CrmList({ name, page, permissions, query }: { name: Exclude<Modu
     const [selected, setSelected] = useState<string[]>([]),
         [confirm, setConfirm] = useState<{ action: 'delete' | 'restore'; ids: string[] } | null>(null);
     const [company, setCompany] = useState(query.companyId ?? '');
+    useGlobalLoadingEffect(pending);
     const can = (permission: string) => permissions.includes(name + '.' + permission);
     const account = name === 'users' || name === 'admins';
     const fields = modules[name].columns;

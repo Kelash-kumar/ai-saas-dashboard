@@ -1,5 +1,17 @@
 import { ApiError } from './errors';
+import { globalLoading } from '@/lib/loading/loading-store';
 export { ApiError } from './errors';
+export interface RequestOptions {
+    signal?: AbortSignal;
+    renew?: boolean;
+    /** Set false for background work, or provide a custom loading message. */
+    loading?: boolean | string;
+}
+interface ExecuteOptions extends RequestOptions {
+    method?: string;
+    body?: unknown;
+    blob?: boolean;
+}
 export async function renewAccess(): Promise<boolean> {
     if (!navigator.locks) return false;
     return navigator.locks.request('foundation-session', async () => {
@@ -8,7 +20,7 @@ export async function renewAccess(): Promise<boolean> {
         return response.ok;
     });
 }
-async function execute<T>(path: string, options: { method?: string; body?: unknown; signal?: AbortSignal; renew?: boolean; blob?: boolean } = {}, retried = false): Promise<T> {
+async function execute<T>(path: string, options: ExecuteOptions = {}, retried = false): Promise<T> {
     if (!path.startsWith('/api/')) throw new ApiError(400, 'Only application API paths are allowed.');
     let response: Response;
     try {
@@ -46,15 +58,22 @@ async function execute<T>(path: string, options: { method?: string; body?: unkno
     }
     return body as T;
 }
+function request<T>(path: string, options: ExecuteOptions): Promise<T> {
+    const task = () => execute<T>(path, options);
+    // Server calls must never share a browser loading task across requests.
+    if (typeof window === 'undefined' || options.loading === false) return task();
+    return globalLoading.run(task, typeof options.loading === 'string' ? options.loading : undefined);
+}
 export const http = {
-    download: (path: string) => execute<Blob>(path, { blob: true }),
-    get: <T>(path: string, signal?: AbortSignal) => execute<T>(path, { signal }),
-    post: <T>(path: string, body: unknown, renew = true) => execute<T>(path, { method: 'POST', body, renew }),
-    patch: <T>(path: string, body: unknown) => execute<T>(path, { method: 'PATCH', body }),
+    download: (path: string, options: RequestOptions = {}) => request<Blob>(path, { ...options, blob: true }),
+    get: <T>(path: string, options: RequestOptions = {}) => request<T>(path, options),
+    post: <T>(path: string, body: unknown, options: RequestOptions = {}) => request<T>(path, { ...options, method: 'POST', body }),
+    patch: <T>(path: string, body: unknown, options: RequestOptions = {}) => request<T>(path, { ...options, method: 'PATCH', body }),
 };
 export const authApi = {
-    login: (email: string, password: string, portal: 'admin' | 'user') => http.post<{ destination?: string; mfaRequired?: boolean }>('/api/session/login', { email, password, portal }, false),
-    verifyLogin: (code: string) => http.post('/api/session/login/verify', { code }, false),
-    logout: () => http.post('/api/session/logout', {}, false),
-    verify: (token: string) => http.post('/api/session/verify', { token }, false),
+    login: (email: string, password: string, portal: 'admin' | 'user') =>
+        http.post<{ destination?: string; mfaRequired?: boolean }>('/api/session/login', { email, password, portal }, { renew: false }),
+    verifyLogin: (code: string) => http.post('/api/session/login/verify', { code }, { renew: false }),
+    logout: () => http.post('/api/session/logout', {}, { renew: false }),
+    verify: (token: string) => http.post('/api/session/verify', { token }, { renew: false }),
 };

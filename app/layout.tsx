@@ -6,6 +6,7 @@ import { appConfig } from '@/config/app';
 import { ThemeProvider } from '@/components/theme/theme-provider';
 import { LocaleProvider } from '@/components/providers/locale-provider';
 import { NotificationProvider } from '@/components/providers/notification-provider';
+import { LoadingProvider } from '@/components/providers/loading-provider';
 import { getI18n } from '@/lib/i18n-server';
 
 export const metadata: Metadata = { title: { default: appConfig.title, template: `%s | ${appConfig.title}` }, description: appConfig.description, icons: { icon: '/favicon.png' } };
@@ -34,7 +35,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             <body>
                 <ThemeProvider>
                     <LocaleProvider initialLocale={locale}>
-                        <NotificationProvider>{children}</NotificationProvider>
+                        <LoadingProvider>
+                            <NotificationProvider>{children}</NotificationProvider>
+                        </LoadingProvider>
                     </LocaleProvider>
                 </ThemeProvider>
             </body>

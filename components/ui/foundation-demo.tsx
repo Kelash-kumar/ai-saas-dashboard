@@ -4,12 +4,14 @@ import { useState } from 'react';
 import { useTheme } from '@/components/theme/theme-provider';
 import { accentColors } from '@/config/theme';
 import { Icon } from './icon';
+import { LoaderDemo } from './loader-demo';
 export function FoundationDemo() {
     const { settings } = useTheme();
     const [count, setCount] = useState(0);
     const [message, setMessage] = useState('');
     return (
         <div className="ui-grid">
+            <LoaderDemo />
             <section className="panel">
                 <div className="section-heading">
                     <div>

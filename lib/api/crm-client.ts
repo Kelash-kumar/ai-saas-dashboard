@@ -1,7 +1,8 @@
 import { http } from './client';
+import type { RequestOptions } from './client';
 import type { PageData } from '@/config/modules';
 export const crmApi = {
-    list: (name: string, query = '', signal?: AbortSignal) => http.get<PageData>('/api/crm/' + name + (query ? '?' + query : ''), signal),
+    list: (name: string, query = '', options: RequestOptions = {}) => http.get<PageData>('/api/crm/' + name + (query ? '?' + query : ''), options),
     save: (name: string, body: unknown, id?: string) =>
         id ? http.patch<{ data: { id: string } }>('/api/crm/' + name + '/' + id, body) : http.post<{ data: { id: string } }>('/api/crm/' + name, body),
     bulk: (name: string, ids: string[], action: 'delete' | 'restore') => http.post('/api/crm/' + name + '/bulk', { ids, action }),

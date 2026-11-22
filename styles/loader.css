@@ -1,0 +1,87 @@
+.app-loader {
+    color: var(--muted);
+    font-size: 13px;
+}
+.app-loader-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+.app-loader-spinner {
+    width: var(--loader-size, 28px);
+    height: var(--loader-size, 28px);
+    flex-shrink: 0;
+    color: var(--accent);
+    animation: app-loader-spin 0.85s linear infinite;
+}
+.app-loader-track {
+    opacity: 0.16;
+}
+.app-loader--inline {
+    display: inline-flex;
+    vertical-align: middle;
+}
+.app-loader--section {
+    display: grid;
+    place-items: center;
+    min-height: 240px;
+    padding: 32px;
+}
+.app-loader--section .app-loader-content,
+.app-loader--fullscreen .app-loader-content {
+    flex-direction: column;
+    gap: 16px;
+}
+.app-loader--fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: color-mix(in srgb, var(--canvas) 72%, transparent);
+    /* Feedback only: existing buttons/dialogs retain responsibility for blocking actions. */
+    pointer-events: none;
+}
+.app-loader--fullscreen .app-loader-content {
+    min-width: 160px;
+    max-width: min(360px, 100%);
+    padding: 28px 36px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: 0 12px 40px rgb(0 0 0 / 8%);
+    text-align: center;
+}
+.app-loader-label {
+    overflow-wrap: anywhere;
+}
+.app-loader--delayed {
+    /* Short requests finish before the overlay appears, preventing a flash. */
+    animation: app-loader-reveal 0.12s ease-out 0.15s both;
+}
+@keyframes app-loader-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+@keyframes app-loader-reveal {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .app-loader-spinner {
+        animation: none;
+    }
+    .app-loader--delayed {
+        animation: none;
+    }
+}
+[data-motion='reduced'] .app-loader-spinner,
+[data-motion='reduced'] .app-loader--delayed {
+    animation: none;
+}

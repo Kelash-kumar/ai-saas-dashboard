@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { renewAccess } from '@/lib/api/client';
 import type { Portal } from '@/lib/auth/types';
+import { useGlobalLoadingEffect } from '@/hooks/use-global-loader';
 export function RenewSession({ portal, destination }: { portal: Portal; destination: string }) {
     const [error, setError] = useState(false);
+    useGlobalLoadingEffect(!error);
     useEffect(() => {
         let active = true;
         async function renew() {

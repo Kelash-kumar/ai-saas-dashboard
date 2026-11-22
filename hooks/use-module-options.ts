@@ -12,7 +12,7 @@ export function useModuleOptions(name: ModuleName, query: string, enabled = true
         const timer = setTimeout(() => {
             setLoading(true);
             void crmApi
-                .list(name, 'limit=100&search=' + encodeURIComponent(query), controller.signal)
+                .list(name, 'limit=100&search=' + encodeURIComponent(query), { signal: controller.signal, loading: false })
                 .then((page) => {
                     setRows(page.data);
                     setError('');

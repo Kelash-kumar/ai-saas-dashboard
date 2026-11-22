@@ -1,5 +1,6 @@
 'use client';
 import { useState, useTransition } from 'react';
+import { useGlobalLoadingEffect } from '@/hooks/use-global-loader';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useRouter, usePathname } from 'next/navigation';
@@ -21,6 +22,7 @@ export function PermissionCatalog({ page, permissions, query }: { page: PageData
     const router = useRouter();
     const pathname = usePathname();
     const [pending, startTransition] = useTransition();
+    useGlobalLoadingEffect(pending);
     const [editor, setEditor] = useState(false);
     function address(changes: Record<string, string>) {
         const params = new URLSearchParams(Object.fromEntries(Object.entries(query).filter(([, value]) => typeof value === 'string') as [string, string][]));

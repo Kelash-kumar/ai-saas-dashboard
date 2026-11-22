@@ -1,5 +1,7 @@
 # AI SaaS Dashboard
 
+Reusable loading UI, automatic API loading and custom loading hooks are documented in [Loading](docs/LOADING.md). Preview them in **UI foundations → Loading & progress**.
+
 The Next.js dashboard for the AI SaaS platform, with a unified Admin/User login and a shared dashboard. Dynamic chatbot integration is planned. Navigation, pages and actions use live NestJS permissions. There is no public registration screen.
 
 ## Run locally
