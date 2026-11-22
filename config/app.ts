@@ -1,7 +1,7 @@
 import type { IconName } from '@/components/ui/icon';
 import { hasPermissions } from '@/lib/auth/permissions';
 import { modules } from './modules';
-export const appConfig = { brand: 'VRISTO', title: 'Foundation Workspace', description: 'A thoughtfully configured workspace.' } as const;
+export const appConfig = { brand: 'AI SaaS', title: 'AI SaaS Dashboard', description: 'Manage your AI SaaS workspace, users, companies, and access.' } as const;
 interface NavigationItem {
     label: string;
     key: string;

@@ -1,13 +1,13 @@
-# Foundation Admin — Vristo + NestJS
+# AI SaaS Dashboard
 
-One Next.js application with a unified Admin/User login and a shared dashboard. Navigation, pages and actions use live NestJS permissions. There is no public registration screen.
+The Next.js dashboard for the AI SaaS platform, with a unified Admin/User login and a shared dashboard. Dynamic chatbot integration is planned. Navigation, pages and actions use live NestJS permissions. There is no public registration screen.
 
 ## Run locally
 
 Use Node 22.13+ (22.x) or a supported LTS version 24.11+. PostgreSQL 17 is used locally. In the backend terminal:
 
 ```powershell
-cd E:\nestjs-auth-foundation
+cd E:\ai-saas-api
 npm ci --ignore-scripts
 npm run auth:keys
 npm run db:local
@@ -19,7 +19,7 @@ npm run start:dev
 In a second terminal:
 
 ```powershell
-cd E:\nestjs-auth-admin
+cd E:\ai-saas-dashboard
 npm ci
 # First checkout only; preserve any existing .env.local settings:
 Copy-Item .env.example .env.local
@@ -69,23 +69,23 @@ Tokens stay in HttpOnly cookies. Browser requests use same-origin handlers; unsa
 
 Theme preferences are browser-local and synchronize across tabs. Language uses a non-secret cookie for server rendering and sets Urdu RTL. Core navigation, auth and dashboard labels support English/Urdu. Detailed CRM form/helper copy and some theme guidance currently remain English. Theme settings do not grant access.
 
-Admins, Users and Companies now use reference-style full-page create/view/edit forms, filtered lists, CSV/XLSX export, bulk selection, archival and restore. Roles have an Admin/User guard and a grouped permission matrix. Account profiles include photos, personal fields, roles, direct permissions, notification preferences and working email-based two-factor login. Permission catalogs remain real, server-authorized data. See the [CRM guide](../nestjs-auth-foundation/docs/CRM-MANAGEMENT.md) for contracts, limits and upgrade instructions.
+Admins, Users and Companies now use reference-style full-page create/view/edit forms, filtered lists, CSV/XLSX export, bulk selection, archival and restore. Roles have an Admin/User guard and a grouped permission matrix. Account profiles include photos, personal fields, roles, direct permissions, notification preferences and working email-based two-factor login. Permission catalogs remain real, server-authorized data. See the [CRM guide](../ai-saas-api/docs/CRM-MANAGEMENT.md) for contracts, limits and upgrade instructions.
 
 ## Validate and build
 
 ```powershell
 # First prepare/build the sibling backend and start its local PostgreSQL:
-cd E:\nestjs-auth-foundation
+cd E:\ai-saas-api
 npm run db:local
 npm run check
-cd E:\nestjs-auth-admin
+cd E:\ai-saas-dashboard
 npx playwright install chromium
 npm run check
 # Production-mode local preview:
 npm start
 ```
 
-Playwright runs the production frontend on port 3101 and a real backend on 3110 using a newly owned disposable database. It never resets the application database. Backend dependencies and test database privileges must be available. See the backend [working guide](../nestjs-auth-foundation/docs/WORKING-GUIDE.md) for PostgreSQL/pgAdmin, mail and API details.
+Playwright runs the production frontend on port 3101 and a real backend on 3110 using a newly owned disposable database. It never resets the application database. Backend dependencies and test database privileges must be available. See the backend [working guide](../ai-saas-api/docs/WORKING-GUIDE.md) for PostgreSQL/pgAdmin, mail and API details.
 
 Vristo assets and the original archive retain the supplied commercial license. Existing theme settings, components and styling were reused without adding authentication or data-fetching dependencies. See [Theme](docs/THEME.md) and [Upgrade notes](docs/UPGRADE.md).
 

@@ -1,8 +1,8 @@
 {
-    "name": "nestjs-auth-admin",
+    "name": "ai-saas-dashboard",
     "version": "0.1.0",
     "private": true,
-    "description": "Vristo Next.js admin with unified NestJS authentication and permission-based dashboard",
+    "description": "AI SaaS dashboard with unified authentication and permission-based administration",
     "engines": {
         "node": ">=22.13 <23 || >=24.11"
     },

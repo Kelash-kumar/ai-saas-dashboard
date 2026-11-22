@@ -16,7 +16,7 @@ export function LoginPage({ initialPortal = 'admin', initialMfa = false, locked 
                 <Link href={'/login/' + portal} className="brand">
                     <Image src="/assets/images/logo.svg" alt="" width={34} height={34} />
                     <span className="brand-text">
-                        VRISTO<small>FOUNDATION WORKSPACE</small>
+                        AI SaaS<small>WORKSPACE</small>
                     </span>
                 </Link>
                 <div className="login-story-content">
@@ -37,7 +37,7 @@ export function LoginPage({ initialPortal = 'admin', initialMfa = false, locked 
                     <p>{admin ? 'The right people. The right access. A thoughtfully organized place to manage it all.' : 'Pick up where you left off. Your workspace is ready when you are.'}</p>
                     <div className="login-illustration" aria-hidden="true">
                         <div className="login-mini-nav">
-                            <span>V</span>
+                            <span>AI</span>
                             <i />
                             <i />
                             <i />
@@ -46,7 +46,7 @@ export function LoginPage({ initialPortal = 'admin', initialMfa = false, locked 
                         <div className="login-mini-content">
                             <div>
                                 <span />
-                                <b>Foundation</b>
+                                <b>AI SaaS</b>
                                 <em />
                             </div>
                             <strong>{admin ? 'Everything in perspective.' : 'Welcome back.'}</strong>
@@ -77,7 +77,7 @@ export function LoginPage({ initialPortal = 'admin', initialMfa = false, locked 
                         </div>
                     </div>
                 </div>
-                <p className="login-copyright">© {new Date().getFullYear()} VRISTO · Foundation edition</p>
+                <p className="login-copyright">© {new Date().getFullYear()} AI SaaS · Workspace</p>
             </section>
             <section className="login-form-area">
                 <div className="login-portal-switch">

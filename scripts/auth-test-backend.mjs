@@ -4,7 +4,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
-const root = process.env.BACKEND_ROOT || path.resolve(__dirname, '../../nestjs-auth-foundation');
+const root = process.env.BACKEND_ROOT || path.resolve(__dirname, '../../ai-saas-api');
 const requireBackend = createRequire(path.join(root, 'package.json'));
 process.chdir(root);
 process.env.NODE_ENV = 'test';
