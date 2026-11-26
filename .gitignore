@@ -40,5 +40,4 @@ playwright-report/
 test-results/
 *.tsbuildinfo
 
-!.env.example
-config.bat
+.env.example
